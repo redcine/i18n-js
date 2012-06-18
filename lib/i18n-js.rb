@@ -159,10 +159,15 @@ module SimplesIdeias
 
     # Initialize and return translations
     def translations
-      ::I18n.backend.instance_eval do
-        init_translations unless initialized?
-        translations
+      @translations = {}
+      if ::I18n.backend.respond_to?(:backends)
+        ::I18n.backend.backends.each do |backend|
+          @translations.reverse_merge! get_translations(backend)
+        end
+      else
+        @translations = get_translations(::I18n.backend)
       end
+      @translations
     end
 
     def deep_merge(target, hash) # :nodoc:
@@ -172,6 +177,20 @@ module SimplesIdeias
     def deep_merge!(target, hash) # :nodoc:
       target.merge!(hash, &MERGER)
     end
+
+    def get_translations(backend)
+      if backend.is_a?(::I18n::Backend::Simple)
+        backend.instance_eval do
+          init_translations unless initialized?
+          translations
+        end
+      elsif backend.is_a?(::I18n::Backend::KeyValue)
+        backend.store.keys.each_with_object({}) {|e,sum| sum[e]=backend.store[e]}
+      else
+        {}
+      end
+    end
   end
 end
+
 
