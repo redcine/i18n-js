@@ -162,7 +162,7 @@ module SimplesIdeias
       @translations = {}
       if ::I18n.backend.respond_to?(:backends)
         ::I18n.backend.backends.each do |backend|
-          @translations.reverse_merge! get_translations(backend)
+          deep_merge! @translations, get_translations(backend)
         end
       else
         @translations = get_translations(::I18n.backend)
@@ -185,10 +185,30 @@ module SimplesIdeias
           translations
         end
       elsif backend.is_a?(::I18n::Backend::KeyValue)
-        backend.store.keys.each_with_object({}) {|e,sum| sum[e]=backend.store[e]}
+        keys_to_hash backend.store.keys.each_with_object({}) {|e,sum| sum[e]=backend.store[e].gsub /(^\"|\"$)/, ''}
       else
         {}
       end
+    end
+
+    def keys_to_hash(blurbs)
+      keys = {}
+      blurbs.sort.each do |blurb_key, value|
+        current = keys
+        yaml_keys = blurb_key.split('.')
+
+        0.upto(yaml_keys.size - 2) do |i|
+          key = yaml_keys[i].to_sym
+
+          # Overwrite en.key with en.sub.key
+          current[key] = {} unless current[key].class == Hash
+
+          current = current[key]
+        end
+
+        current[yaml_keys.last] = value
+      end
+      keys
     end
   end
 end
