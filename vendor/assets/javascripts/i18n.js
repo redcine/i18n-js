@@ -51,6 +51,9 @@ I18n.defaultLocale = "en";
 // Set default handling of translation fallbacks to false
 I18n.fallbacks = false;
 
+// Set fallback to key to false
+I18n.fallback_to_key = false;
+
 // Set default separator
 I18n.defaultSeparator = ".";
 
@@ -130,6 +133,11 @@ I18n.lookup = function(scope, options) {
 
     if (!messages && this.isValidNode(options, "defaultValue")) {
         messages = options.defaultValue;
+    }
+
+    // falls back to key
+    if (!messages && this.fallback_to_key) {
+        messages = lookupInitialScope;
     }
   }
 
