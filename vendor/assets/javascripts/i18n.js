@@ -105,7 +105,7 @@ I18n.lookup = function(scope, options) {
     , currentScope
   ;
 
-  if (typeof(scope) == "object") {
+  if (typeof(scope) == "object" && scope !== null) {
     scope = scope.join(this.defaultSeparator);
   }
 
