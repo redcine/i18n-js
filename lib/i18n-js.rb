@@ -185,7 +185,7 @@ module SimplesIdeias
           translations
         end
       elsif backend.is_a?(::I18n::Backend::KeyValue)
-        keys_to_hash backend.store.keys.each_with_object({}) {|e,sum| sum[e]=backend.store[e].gsub /(^\"|\"$)/, ''}
+        keys_to_hash backend.store.keys.each_with_object({}) {|e,sum| sum[e]=ActiveSupport::JSON.decode(backend.store[e])}
       else
         {}
       end
