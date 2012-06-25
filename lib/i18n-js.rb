@@ -179,7 +179,7 @@ module SimplesIdeias
     end
 
     def get_translations(backend)
-      if backend.respond_to?(:translations) && backend.respond_to?(:init_translations)
+      if backend.respond_to?(:translations, true) && backend.respond_to?(:init_translations, true)
         backend.instance_eval do
           init_translations unless initialized?
           translations
