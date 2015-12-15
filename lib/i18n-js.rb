@@ -132,7 +132,9 @@ module SimplesIdeias
       result = {}
 
       [scopes].flatten.each do |scope|
-        deep_merge! result, filter(translations, scope)
+        unless filter(translations, scope).nil?
+          deep_merge! result, filter(translations, scope)
+        end
       end
 
       result
